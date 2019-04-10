@@ -1,0 +1,55 @@
+<wsdl:definitions 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+xmlns:tns="http://webservice.bbc.com/" 
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
+xmlns:ns2="http://www.person.bbc.com"
+xmlns:ns3="http://www.response.bbc.com"
+targetNamespace="http://webservice.bbc.com/"
+name="PersonService">
+
+  <wsdl:types>
+    <xsd:schema>
+      <xsd:import namespace="http://www.person.bbc.com"
+          schemaLocation="../xsd/Person.xsd"/>
+      <xsd:import namespace="http://www.response.bbc.com"
+          schemaLocation="../xsd/ESBResponse.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  
+  <wsdl:message name="personRequest">
+    <wsdl:part element="ns2:Person" name="parameters"> </wsdl:part>
+  </wsdl:message>
+  
+  <wsdl:message name="personResponse">
+    <wsdl:part element="ns3:ESBResponse" name="parameters"> </wsdl:part>
+  </wsdl:message>
+  
+  <wsdl:portType name="PersonPortType">
+    <wsdl:operation name="createPerson">
+      <wsdl:input message="tns:personRequest" name="personRequest"> </wsdl:input>
+      <wsdl:output message="tns:personResponse" name="personResponse"> </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  
+  <wsdl:binding name="PersonServiceSoapBinding" type="tns:PersonPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="createPerson">
+      <soap:operation soapAction="urn:createPerson" style="document"/>
+      <wsdl:input name="personRequest">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="personResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  
+  <wsdl:service name="PersonService">
+    <wsdl:port binding="tns:PersonServiceSoapBinding" name="PersonPort">
+      <soap:address location="http://localhost:8080/service/person"/>
+    </wsdl:port>
+  </wsdl:service>
+  
+</wsdl:definitions>
