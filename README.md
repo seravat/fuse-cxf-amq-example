@@ -26,6 +26,9 @@ SOAP request in:
 
 AMQ JSON out (will be in the queue bbcOutputQueue)
 
+NOTE:
+Found out that the queue in AMQ7.2, when using the JMS artemis component in Camel needs to be: jms.queue.bbcOutputQueue
+
 ```json
 {"firstName":"joao","lastName":"tavares"}
 ```
