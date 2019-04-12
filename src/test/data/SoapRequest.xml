@@ -1,0 +1,11 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:per="http://www.person.bbc.com">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <per:Person>
+         <!--Optional:-->
+         <per:firstName>joao</per:firstName>
+         <!--Optional:-->
+         <per:lastName>tavares</per:lastName>
+      </per:Person>
+   </soapenv:Body>
+</soapenv:Envelope>

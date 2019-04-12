@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:per="http://www.person.bbc.com"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd             http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd     http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd     http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    <!-- this is an included XML file where we only the the routeContext -->
+    <routeContext id="jmsRoute" xmlns="http://camel.apache.org/schema/spring">
+        <route id="sendToJms">
+            <from id="_from2" uri="direct:sendToJms"/>
+            <setExchangePattern id="_setExchangePattern1" pattern="InOnly"/>
+            <convertBodyTo type="String"/>
+            <to id="_to2" uri="jmsClient:bbcOutputQueue"/>
+        </route>
+    </routeContext>
+</beans>

@@ -3,36 +3,28 @@
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:cxf="http://camel.apache.org/schema/cxf"
     xmlns:jaxws="http://cxf.apache.org/jaxws"
-    xmlns:soap="http://cxf.apache.org/bindings/soap"
     xmlns:per="http://www.person.bbc.com"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
     xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd             http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd     http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd     http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    <!-- import the routes from another XML file -->
+    <import resource="jmsRoute.xml"/>
+    <import resource="soapRoute.xml"/>
+    <!-- Configure the CXF endpoint from WSDL-->
     <cxf:cxfEndpoint address="/person" id="wsEndpoint" wsdlURL="wsdl/PersonService.wsdl">
         <cxf:properties>
             <entry key="dataFormat" value="RAW"/>
         </cxf:properties>
     </cxf:cxfEndpoint>
-    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemqService">
-        <property name="brokerURL" value="tcp://localhost:61616"/>
-        <property name="username" value="admin"/>
-        <property name="password" value="admin"/>
-    </bean>
     <camelContext id="camelContext-f79bc100-44c7-4ae6-8186-a6effc6d2de1"
         trace="false" xmlns="http://camel.apache.org/schema/spring">
+        <!-- refer to a given route to be used -->
+        <routeContextRef ref="soapRoute"/>
+        <routeContextRef ref="jmsRoute"/>
         <dataFormats>
             <jaxb contextPath="redhat.fuse.example.service.types"
                 id="personFormat" partClass="redhat.fuse.example.service.types.PersonType"/>
             <json id="personJSON" library="Jackson" unmarshalTypeName="redhat.fuse.example.service.types.PersonType"/>
         </dataFormats>
-        <route id="receive-ws-request">
-            <from id="_from1" uri="cxf:bean:wsEndpoint?dataFormat=RAW"/>
-			<setBody>
-                <xpath>//soapenv:Body/per:Person</xpath>
-            </setBody>
-            <log id="wsInput" message=">> Received message from SOAP service: ${body}"/>
-            <unmarshal id="unmarshallPerson" ref="personFormat"/>
-            <marshal id="marshalPersonJson" ref="personJSON"/>
-            <to id="_toActiveMQ1" uri="activemqService:bbcOutputQueue?disableReplyTo=true&amp;asyncConsumer=true"/>
-        </route>
     </camelContext>
 </beans>

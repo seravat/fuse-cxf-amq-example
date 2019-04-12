@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:per="http://www.person.bbc.com"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd             http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd     http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd     http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    <!-- setup ActiveMQ Artemis connection factory -->
+    <bean
+        class="org.apache.activemq.artemis.jms.client.ActiveMQJMSConnectionFactory" id="artemisConnectionFactory">
+        <constructor-arg index="0" value="tcp://localhost:61616"/>
+        <constructor-arg index="1" value="admin"/>
+        <constructor-arg index="2" value="admin"/>
+    </bean>
+    <!-- JMS client using the Artemis Connection Factory -->
+    <bean class="org.apache.camel.component.jms.JmsComponent" id="jmsClient">
+        <!-- specify connection factory on JMS component -->
+        <property name="connectionFactory" ref="artemisConnectionFactory"/>
+    </bean>
+</beans>

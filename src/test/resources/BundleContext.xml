@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:amq="http://activemq.apache.org/schema/core"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:cxf="http://camel.apache.org/schema/cxf"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:per="http://www.person.bbc.com"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans-3.0.xsd             http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd     http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd     http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+    <!-- import the routes from another XML file -->
+    <import resource="spring/jmsRoute.xml"/>
+    <import resource="spring/soapRoute.xml"/>
+    <!--  ActiveMQ destinations to use  -->
+    <amq:queue id="bbcOutputQueue" physicalName="org.apache.activemq.spring.Test.spring.embedded"/>
+    <!-- JMS ConnectionFactory to use, configuring the embedded broker using XML -->
+    <amq:connectionFactory brokerURL="vm://localhost" id="artemisConnectionFactory"/>
+    <!-- JMS client using the Artemis Connection Factory -->
+    <bean class="org.apache.camel.component.jms.JmsComponent" id="jmsClient">
+        <!-- specify connection factory on JMS component -->
+        <property name="connectionFactory" ref="artemisConnectionFactory"/>
+    </bean>
+    <!-- Configure the CXF endpoint from WSDL-->
+    <cxf:cxfEndpoint address="http://localhost:8182/services/person" id="wsEndpoint" wsdlURL="wsdl/PersonService.wsdl">
+        <cxf:properties>
+            <entry key="dataFormat" value="RAW"/>
+        </cxf:properties>
+    </cxf:cxfEndpoint>
+    <camelContext id="camelContext-294ee9a6-c204-4ddc-a578-5b35d80185b6" xmlns="http://camel.apache.org/schema/spring">
+        <!-- refer to a given route to be used -->
+        <routeContextRef ref="soapRoute"/>
+        <routeContextRef ref="jmsRoute"/>
+        <dataFormats>
+            <jaxb contextPath="redhat.fuse.example.service.types"
+                id="personFormat" partClass="redhat.fuse.example.service.types.PersonType"/>
+            <json id="personJSON" library="Jackson" unmarshalTypeName="redhat.fuse.example.service.types.PersonType"/>
+        </dataFormats>
+        <!--         <route id="_route1">
+            <from uri="jmsClient:bbcOutputQueue"/>
+            <log message="Message from queue: ${body}"></log>
+            <to uri="mock:result"/>
+        </route> -->
+    </camelContext>
+</beans>
